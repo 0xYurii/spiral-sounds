@@ -1,16 +1,18 @@
 import express from 'express'
+import {productsRouter} from "./routes/products.js"
+
 
 const app=express()
-
-/*
-Challenge:
-    1. Use express.static() to serve all the files in 'public'.
-*/
-
-
 const PORT=8000
 
+
+
+
 app.use(express.static('public'))
+
+app.use("/api",productsRouter)
+
+
 
 
 

@@ -27,17 +27,34 @@ export async function getProducts(req, res) {
 
     let query='SELECT * FROM products'
 
-    const productsAll=await db.all(query)
+    const params=[]
+    const {genre}=req.query
+
+    if(genre){
+      query+=' WHERE genre = ?'
+      params.push(genre)
+
+      const products=await db.all(query,params)
+      res.json(products)
+    }else{
+      const products=await db.all(query)
+      res.json(products)
+    }
+
     
-    res.json(productsAll)
+    
+    
 
 /*
 Challenge:
-1. Write logic in getProducts() so all products display on page load.
-	 
-   As we will need to modify it in the next challenge, store the SQL query in a let and pass it into the all() method.
-*/
+1. Detect if a query string ‘genre’ is used. 
+   If it is, retrieve only products with that genre from the database and serve them. 
+   If not, all products should be served.
 
+hint.md for help
+
+Example incoming query: '?genre=rock'
+*/
 
 
   } catch (err) {

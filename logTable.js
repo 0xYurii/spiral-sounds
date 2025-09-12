@@ -1,15 +1,11 @@
-import sqlite3 from 'sqlite3'
-import { open } from 'sqlite'
-import path from 'node:path'
+import {getDBConnection} from './db/db.js'
 
 async function viewAllProducts() {
-  const db = await open({ 
-    filename: path.join('database.db'),
-    driver: sqlite3.Database
-  });
+  const db = await getDBConnection()
 
   try { 
     const products = await db.all('SELECT * FROM products')
+    
     // Neater table display
     const displayItems = products.map(({ id, title, artist, year, stock }) => {
       return { id, title, artist, year, stock }

@@ -8,7 +8,7 @@ export async function getGenres(req, res) {
 
     const genreRows = await db.all('SELECT DISTINCT genre FROM products')
     const genres = genreRows.map(row => row.genre)
-    console.log(genres)
+    res.json(genres)
 
 /*
 Challenge:

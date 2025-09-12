@@ -40,9 +40,9 @@ function renderProducts(products) {
  * Fetches and displays all products on initial page load.
  */
 async function init() {
+  populateGenreSelect()
   const products = await getProducts()
   renderProducts(products)
-  populateGenreSelect()
 }
 
 init()
@@ -54,7 +54,7 @@ init()
  */
 async function populateGenreSelect() {
   const res = await fetch('/api/products/genres')
-  const genres = await res.json()
+  const genres = await res.json() // expects an array of genres as strings: ['rock', 'pop', ...]
   const select = document.getElementById('genre-select')
 
   genres.forEach(genre => {

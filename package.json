@@ -15,7 +15,8 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "vercel-build": "node creatTable.js && node seedTable.js"
   },
   "dependencies": {
     "express": "^5.1.0",

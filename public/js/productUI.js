@@ -7,7 +7,7 @@ export function renderProducts(products) {
   const cards = products.map((album) => {
     return `
       <div class="product-card">
-        <img src="./images/${album.image}" alt="${album.title}">
+        <img src="/images/${album.image}" alt="${album.title}">
         <h2>${album.title}</h2>
         <h3>${album.artist}</h3>
         <p>$${album.price}</p>

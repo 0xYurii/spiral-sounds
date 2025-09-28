@@ -1,6 +1,6 @@
 import validator from 'validator'
 import { getDBConnection } from '../db/db.js'
-
+import bcrypt from 'bcryptjs'
 export async function registerUser(req, res) {
 
   let { name, email, username, password } = req.body
@@ -27,7 +27,16 @@ export async function registerUser(req, res) {
     return res.status(400).json({ error: 'Invalid email format' })
 
   }
+/*
+Challenge:
+  1. Import the bcryptjs package.
+  2. Use it to hash the incoming password just before it's stored in the database.
+    - Use a cost-factor of 10
 
+To test, sign up a new user and run logTable.js.
+
+hint.md for help!
+*/
 
   try {
 
@@ -44,10 +53,13 @@ export async function registerUser(req, res) {
       return res.status(409).json({ error: 'Email or username already in use.' });
     }
 
-    // 2. If they are unique, add the new user to the table.
+    // 2. Hash the password with a cost-factor of 10
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 3. If they are unique, add the new user to the table with the hashed password.
     await db.run(
       'INSERT INTO users (name, email, username, password) VALUES (?, ?, ?, ?)',
-      [name, email, username, password]
+      [name, email, username, hashedPassword]
     );
 
     // Send a success response. 201 Created is the appropriate status code.

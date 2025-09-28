@@ -1,4 +1,4 @@
-import { getDBConnection } from '../db/db.js'
+import { getDBConnection } from './db/db.js'
 
 async function logTable() {
   const db = await getDBConnection()
@@ -6,7 +6,6 @@ async function logTable() {
   const tableName = 'users'
 
   try { 
-
     const table = await db.all(`SELECT * FROM ${tableName}`)
     console.table(table)
 

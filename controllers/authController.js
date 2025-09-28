@@ -1,6 +1,6 @@
 import validator from 'validator'
 import { getDBConnection } from '../db/db.js'
-import bcrypt from 'bcryptjs'
+
 export async function registerUser(req, res) {
 
   let { name, email, username, password } = req.body
@@ -27,43 +27,26 @@ export async function registerUser(req, res) {
     return res.status(400).json({ error: 'Invalid email format' })
 
   }
-/*
-Challenge:
-  1. Import the bcryptjs package.
-  2. Use it to hash the incoming password just before it's stored in the database.
-    - Use a cost-factor of 10
 
-To test, sign up a new user and run logTable.js.
-
-hint.md for help!
-*/
 
   try {
 
     const db = await getDBConnection()
 
-    // 1. Check if the username or email address has already been used.
-    const existingUser = await db.get(
-      'SELECT id FROM users WHERE email = ? OR username = ?',
-      [email, username]
-    );
+/*
+Challenge:
+1. Check if the username or email address has already been used.
+    - If it has, end the response with a suitable status code and this object:
+      { error: 'Email or username already in use.' }.
 
-    if (existingUser) {
-      // If it has, end the response with a suitable status code. 409 Conflict is a good choice.
-      return res.status(409).json({ error: 'Email or username already in use.' });
-    }
+    - If the username and email address are unique in the database, add the user to the table and send this JSON { message: 'User registered'}. Which status code should you use?
 
-    // 2. Hash the password with a cost-factor of 10
-    const hashedPassword = await bcrypt.hash(password, 10);
+- When you have been successful, the mini browser will redirect to the homepage.
 
-    // 3. If they are unique, add the new user to the table with the hashed password.
-    await db.run(
-      'INSERT INTO users (name, email, username, password) VALUES (?, ?, ?, ?)',
-      [name, email, username, hashedPassword]
-    );
+- Run logTable.js to check you have created a user. 
 
-    // Send a success response. 201 Created is the appropriate status code.
-    res.status(201).json({ message: 'User registered' });
+- You will be able to see the password in the db! We will fix that later!
+*/
 
   } catch (err) {
 

@@ -9,7 +9,7 @@ export async function checkAuth() {
     } 
   
     const user = await res.json()
-    if (!user.isLoggedIn) { 
+    if (!user.isLoggedIn) {
       return false
     }
     return user.name

@@ -1,31 +1,64 @@
-import validator from 'validator';
+import validator from 'validator'
+import { getDBConnection } from '../db/db.js'
 
 export async function registerUser(req, res) {
 
   let { name, email, username, password } = req.body
 
-  // 1. Validate the incoming user data.
-  // - Make sure all fields are present.
   if (!name || !email || !username || !password) {
-    return res.status(400).json({ error: 'All fields are required.' });
+
+    return res.status(400).json({ error: 'All fields are required.' })
+
   }
 
-  // - Remove any whitespace where appropriate.
-  name=name.trim()
-  email=email.trim()
-  username=username.trim()
+  name = name.trim()
+  email = email.trim()
+  username = username.trim()
 
-  // - Use regex /^[a-zA-Z0-9_-]{1,20}$/ to check the username
-  const usernameRegex = /^[a-zA-Z0-9_-]{1,20}$/;
-  if (!usernameRegex.test(username)) {
-    return res.status(400).json({ error: 'Username must be 1-20 characters long and can only contain letters, numbers, underscores, and hyphens.' });
+  if (!/^[a-zA-Z0-9_-]{1,20}$/.test(username)) {
+
+    return res.status(400).json(
+      { error: 'Username must be 1–20 characters, using letters, numbers, _ or -.' }
+    )
   }
 
-  // - Use the Validator package to check the email format is valid.
   if (!validator.isEmail(email)) {
-    return res.status(400).json({ error: 'Please provide a valid email address.' });
+
+    return res.status(400).json({ error: 'Invalid email format' })
+
   }
-  console.log(req.body)
+
+
+  try {
+
+    const db = await getDBConnection()
+
+    // 1. Check if the username or email address has already been used.
+    const existingUser = await db.get(
+      'SELECT id FROM users WHERE email = ? OR username = ?',
+      [email, username]
+    );
+
+    if (existingUser) {
+      // If it has, end the response with a suitable status code. 409 Conflict is a good choice.
+      return res.status(409).json({ error: 'Email or username already in use.' });
+    }
+
+    // 2. If they are unique, add the new user to the table.
+    await db.run(
+      'INSERT INTO users (name, email, username, password) VALUES (?, ?, ?, ?)',
+      [name, email, username, password]
+    );
+
+    // Send a success response. 201 Created is the appropriate status code.
+    res.status(201).json({ message: 'User registered' });
+
+  } catch (err) {
+
+    console.error('Registration error:', err.message);
+    res.status(500).json({ error: 'Registration failed. Please try again.' })
+
+  }
 
 
 }

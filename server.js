@@ -3,6 +3,7 @@ import { productsRouter } from './routes/products.js'
 import { authRouter } from './routes/auth.js'
 import { meRouter } from './routes/me.js'
 import session from 'express-session'
+import { cartRouter } from './routes/cart.js' 
 
 const app = express() 
 const PORT = 8000
@@ -28,6 +29,8 @@ app.use('/api/products', productsRouter)
 app.use('/api/auth/me', meRouter)
 
 app.use('/api/auth', authRouter)
+
+app.use('/api/cart', cartRouter)
 
  
 app.listen(PORT, () => { 

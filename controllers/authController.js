@@ -58,24 +58,32 @@ export async function registerUser(req, res) {
 
 export async function loginUser(req, res) {
 
+  let { username, password } = req.body
 
-  let {username,password}=req.body
-  if(!username || ! password){
+  if (!username || !password) {
     return res.status(400).json({ error: 'All fields are required' } )
   }
-  username=username.trim()
+
+  username = username.trim()
 
   try {
     const db = await getDBConnection()
-    const user=await db.get('SELECT * FROM users WHERE username= ?',[username])
-    if(!user){
+
+    const user = await db.get('SELECT * FROM users WHERE username = ?', [username])
+
+    if (!user) {
       return res.status(401).json({ error: 'Invalid credentials'})
     }
-    const isValid=await bcrypt.compare(password,user.password)
-    if(!isValid){
+
+    const isValid = await bcrypt.compare(password, user.password)
+
+    if (!isValid) {
+
       return res.status(401).json({ error: 'Invalid credentials'})
+
     }
-    res.session.userId=user.id
+
+    req.session.userId = user.id
     res.json({ message: 'Logged in' })
 
   } catch (err) {
@@ -84,3 +92,12 @@ export async function loginUser(req, res) {
   }
 }
 
+export function logoutUser(req, res) {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ error: 'Logout failed.' });
+    }
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logged out' });
+  });
+}

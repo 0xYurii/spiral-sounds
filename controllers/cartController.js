@@ -34,10 +34,6 @@ export async function getCartCount(req, res) {
 
 export async function getAll(req, res) {
 
-// Don't touch this code!
-  if (!req.session.userId) {
-    return res.json({err: 'not logged in'})
-  }
 
   const db = await getDBConnection()
 

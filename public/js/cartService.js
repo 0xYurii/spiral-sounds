@@ -55,6 +55,7 @@ async function fetchCartItems({ userMessage, checkoutBtn }) {
   const res = await fetch('/api/cart/', { credentials: 'include' })
 
   if (!res.ok) {
+    window.location.href = '/'
     checkoutBtn.disabled = true
     checkoutBtn.classList.add('disabled')
     userMessage.innerHTML = 'Please <a href="login.html">log in</a>.'

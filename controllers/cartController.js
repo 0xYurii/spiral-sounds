@@ -49,27 +49,35 @@ export async function getAll(req, res) {
 
 export async function deleteItem(req, res) {
 
-    const db = await getDBConnection();
-    const itemId =  parseInt(req.params.itemId, 10)
+    const db = await getDBConnection()
+
+    const itemId = parseInt(req.params.itemId, 10)
+
     if (isNaN(itemId)) {
-        return res.status(400).json({ error: 'Invalid item ID'})
+      return res.status(400).json({error: 'Invalid item ID'})
     }
-    const userId = req.session.userId
-    const item=db.get('SELECT quantity FROM cart_items WHERE id= ? AND user_id= ?',[itemId,userId])
+
+    const item = await db.get('SELECT quantity FROM cart_items WHERE id = ? AND user_id = ?', [itemId, req.session.userId])
+
     if (!item) {
       return res.status(400).json({error: 'Item not found'})
     }
+
     await db.run('DELETE FROM cart_items WHERE id = ? AND user_id = ?', [itemId, req.session.userId])
+
     res.status(204).send()
-    
+  
+}
+
+export async function deleteAll(req, res) {
+
+  const db = await getDBConnection()
+  await db.run('DELETE  FROM cart_items WHERE user_id = ?',[req.session.userId])
+  res.status(204).send()
 /*
 Challenge:
-1. When a user clicks the delete button, that item should be deleted from the cart_items table, regardless of quantity.
-
-2. Research Challenge: You need to think about how to end the response! What status code should you use, and what method? (Clue: it’s not the json() method!)
-
-hint.md for help!
+1. Delete all cart items for a user.
 */
-  
+
 }
 
